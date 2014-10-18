@@ -2,34 +2,28 @@ package com.harald.fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.btwiz.library.BTWiz;
-import com.btwiz.library.DeviceNotSupportBluetooth;
 import com.harald.R;
-import com.harald.listners.DeviceListing.Select;
-import com.harald.listners.DeviceListing.SwipeRefresh;
+import com.harald.common.Helper;
+import com.harald.listners.DeviceListing.DeviceSelector;
 
-public class DeviceListing extends Fragment{
+import java.util.ArrayList;
+import java.util.List;
+
+public class DeviceListing extends Fragment {
 
     ArrayAdapter<String> deviceNames;
-    SwipeRefreshLayout swipeLayout;
-
-    public static DeviceListing newInstance() {
-        DeviceListing fragment = new DeviceListing();
-        return fragment;
-    }
-
-    public DeviceListing() {
-        // Required empty public constructor
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,25 +46,18 @@ public class DeviceListing extends Fragment{
         ListView deviceList = (ListView) activity.findViewById(R.id.device_list);
         deviceNames = new ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1);
 
-        try {
-            if (!BTWiz.isEnabled(activity)) {
-                startActivity(BTWiz.enableBTIntent());
-                return;
-            }
-        } catch (DeviceNotSupportBluetooth e) {
-            return;
-        }
+        List<BluetoothDevice> devices =
+                new ArrayList<BluetoothDevice>(BluetoothAdapter.getDefaultAdapter().getBondedDevices());
 
-        for (BluetoothDevice d : BTWiz.getAllBondedDevices(activity)) {
-            addDeviceToList(d);
-        }
+        (new Helper(activity)).ensureBTOn();
         deviceList.setAdapter(deviceNames);
 
-        //TODO : Need to discover devices as well
-        //swipeLayout = (SwipeRefreshLayout) activity.findViewById(R.id.swipe_container);
-        //swipeLayout.setOnRefreshListener(new SwipeRefresh(activity));
+        for (BluetoothDevice d : devices) {
+            deviceNames.add(d.getName());
+        }
 
-        deviceList.setOnItemClickListener(new Select());
+        DeviceSelector deviceSelector = new DeviceSelector(activity, devices);
+        deviceList.setOnItemClickListener(deviceSelector);
     }
 
     @Override
@@ -81,10 +68,6 @@ public class DeviceListing extends Fragment{
     @Override
     public void onDetach() {
         super.onDetach();
-    }
-
-    public void addDeviceToList(BluetoothDevice d) {
-        deviceNames.add(d.getName());
     }
 
 }
