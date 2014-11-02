@@ -7,15 +7,14 @@ import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.btwiz.library.BTWiz;
 import com.harald.R;
 import com.harald.common.Helper;
+import com.harald.listners.DeviceListing.DeviceRefresh;
 import com.harald.listners.DeviceListing.DeviceSelector;
 
 import java.util.ArrayList;
@@ -24,6 +23,7 @@ import java.util.List;
 public class DeviceListing extends Fragment {
 
     ArrayAdapter<String> deviceNames;
+    SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -33,7 +33,6 @@ public class DeviceListing extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_device_listing, container, false);
     }
 
@@ -41,20 +40,23 @@ public class DeviceListing extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Activity activity = getActivity();
+        final Activity activity = getActivity();
 
         ListView deviceList = (ListView) activity.findViewById(R.id.device_list);
         deviceNames = new ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1);
 
-        List<BluetoothDevice> devices =
-                new ArrayList<BluetoothDevice>(BluetoothAdapter.getDefaultAdapter().getBondedDevices());
 
         (new Helper(activity)).ensureBTOn();
+        List<BluetoothDevice> devices =
+                new ArrayList<BluetoothDevice>(BluetoothAdapter.getDefaultAdapter().getBondedDevices());
         deviceList.setAdapter(deviceNames);
 
         for (BluetoothDevice d : devices) {
             deviceNames.add(d.getName());
         }
+
+        swipeRefreshLayout = (SwipeRefreshLayout) activity.findViewById(R.id.swipe_container);
+        swipeRefreshLayout.setOnRefreshListener(new DeviceRefresh(activity, deviceNames, swipeRefreshLayout));
 
         DeviceSelector deviceSelector = new DeviceSelector(activity, devices);
         deviceList.setOnItemClickListener(deviceSelector);
@@ -69,5 +71,4 @@ public class DeviceListing extends Fragment {
     public void onDetach() {
         super.onDetach();
     }
-
 }

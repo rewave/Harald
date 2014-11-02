@@ -2,18 +2,23 @@ package com.harald.fragments;
 
 
 import android.app.Activity;
-import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
+import com.btwiz.library.BTSocket;
+import com.btwiz.library.BTWiz;
+import com.harald.Main;
 import com.harald.R;
+
+import java.io.IOException;
 
 public class DeviceConnected extends Fragment {
     Activity activity;
+    BTSocket socket;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -32,6 +37,7 @@ public class DeviceConnected extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         activity = getActivity();
+        socket = ((Main) activity).getSocket();
     }
 
     public void commandButtonPressed(View v) {
@@ -66,11 +72,31 @@ public class DeviceConnected extends Fragment {
                 command = 0;
         }
 
-        ((OnCommandIssuedListener) v.getContext()).onCommandIssued(command);
+        sendCommand(command);
         Log.i("Command", String.valueOf(command));
     }
 
-    public interface OnCommandIssuedListener {
-        public void onCommandIssued(int command);
+    public void sendCommand(int command) {
+        if (command > 0) writeToSocket(String.valueOf(command));
+        else {
+            writeToSocket("exit");
+
+            BTWiz.closeAllOpenSockets();
+            BTWiz.cleanup(activity);
+
+            getFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container, new DeviceListing())
+                    .commit();
+        }
     }
+
+    public void writeToSocket(String s) {
+        try {
+            socket.write(s);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
