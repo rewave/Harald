@@ -56,9 +56,9 @@ public class DeviceListing extends Fragment {
         }
 
         swipeRefreshLayout = (SwipeRefreshLayout) activity.findViewById(R.id.swipe_container);
-        swipeRefreshLayout.setOnRefreshListener(new DeviceRefresh(activity, deviceNames, swipeRefreshLayout));
+        swipeRefreshLayout.setOnRefreshListener(new DeviceRefresh(activity, devices, deviceNames, swipeRefreshLayout));
 
-        DeviceSelector deviceSelector = new DeviceSelector(activity, devices);
+        DeviceSelector deviceSelector = new DeviceSelector(activity, devices, swipeRefreshLayout);
         deviceList.setOnItemClickListener(deviceSelector);
     }
 
