@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,9 @@ import com.harald.listners.DeviceListing.DeviceSelector;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
 public class DeviceListing extends Fragment {
 
@@ -70,5 +74,10 @@ public class DeviceListing extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+    }
+
+    public void connectionError() {
+        Log.i("Device Selector", "Connection error");
+        Crouton.makeText(getActivity(), "Couldn't Connect :|", Style.ALERT).show();
     }
 }

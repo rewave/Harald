@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
+
 
 public class Main extends Activity {
 
@@ -84,9 +87,4 @@ public class Main extends Activity {
         Log.i("Command", String.valueOf(command));
     }
 
-    ////////////////////
-    public void loading(boolean show) {
-        if (show) progressBar.setVisibility(View.VISIBLE);
-        else progressBar.setVisibility(View.INVISIBLE);
-    }
 }
