@@ -66,7 +66,7 @@ public class DeviceSelector implements AdapterView.OnItemClickListener {
         } else {
             Log.i("Trying to pair", ":)");
             try {
-                Log.i("Pairing Procedure in progress", "Will connect at end");
+                Log.i("Pairing Procedure", "Will connect at end");
                 createBond(selectedDevice);
             } catch (Exception e) {
                 e.printStackTrace();

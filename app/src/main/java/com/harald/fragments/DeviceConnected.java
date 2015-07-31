@@ -1,4 +1,4 @@
-package com.harald.fragments;
+    package com.harald.fragments;
 
 
 import android.app.Activity;
